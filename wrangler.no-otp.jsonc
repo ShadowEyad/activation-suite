@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "activation-suite-no-otp",
+  "main": "src/worker-no-otp.js",
+  "compatibility_date": "2026-11-25",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true
+}

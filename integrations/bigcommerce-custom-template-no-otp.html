@@ -1,0 +1,60 @@
+<!--
+  BigCommerce Custom Page Embed: Product Activation Portal
+  
+  HOW TO USE:
+  1. In the BigCommerce Control Panel, go to Storefront -> Web Pages -> Create a Web Page.
+  2. For Page Type, select "Allow people to view this page in their browser".
+  3. Under Web Page Details, toggle the text editor to HTML mode.
+  4. Paste this entire file code block, update the "data-api" URL, and click Save.
+-->
+
+<div id="ap-root-container" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; background: #f5f5f7; padding: 20px 0;">
+  <!-- Embed Activation Widget -->
+  <iframe 
+    src="about:blank" 
+    id="activation-portal-iframe"
+    style="width: 100%; max-width: 480px; height: 800px; border: none; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);"
+  ></iframe>
+</div>
+
+<script>
+  (function() {
+    // 1. UPDATE THIS URL to point to your live Cloudflare Worker API (no trailing slash)
+    var backendApiUrl = "https://your-worker-name.your-username.workers.dev";
+    
+    // 2. Configure branding variables
+    var brandName = "Activation Portal";
+    var supportEmail = "support@yourdomain.com";
+
+    // Set up iframe dynamic markup injection (bypasses cross-origin cookie/css framing limits)
+    var iframe = document.getElementById('activation-portal-iframe');
+    var doc = iframe.contentWindow || iframe.contentDocument;
+    if (doc.document) doc = doc.document;
+
+    // We fetch the widget template source, insert coordinates, and write to iframe
+    fetch(backendApiUrl + '/portal-no-otp')
+      .then(function(res) {
+        if (!res.ok) throw new Error('API server unreachable');
+        return res.text();
+      })
+      .then(function(html) {
+        // Inject correct data coordinates before rendering
+        var updatedHtml = html
+          .replace('data-api=""', 'data-api="' + backendApiUrl + '"')
+          .replace('data-name="Activation Portal"', 'data-name="' + brandName + '"')
+          .replace('data-email="support@yourdomain.com"', 'data-email="' + supportEmail + '"')
+          .replace(/href=["']\/admin["']/g, 'href="' + backendApiUrl + '/admin" target="_blank"');
+        
+        doc.open();
+        doc.write(updatedHtml);
+        doc.close();
+      })
+      .catch(function(err) {
+        console.error('Portal setup failed:', err);
+        // Fallback placeholder message
+        doc.open();
+        doc.write('<div style="font-family:sans-serif; text-align:center; padding:40px; color:#ef4444;"><h3>Activation System Offline</h3><p>Please try again later or contact support.</p></div>');
+        doc.close();
+      });
+  })();
+</script>

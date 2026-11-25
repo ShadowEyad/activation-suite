@@ -1,0 +1,553 @@
+export const PORTAL_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Activation Portal</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f5f7;
+    }
+  </style>
+</head>
+<body>
+<!--email_off-->
+
+<div id="ap-root" class="ap-root"
+  data-api=""
+  data-name="Activation Portal"
+  data-sub="Product Registration"
+  data-email="support@yourdomain.com"
+  data-theme-hue="indigo"
+  data-logo-url=""
+  data-color-primary=""
+  data-color-bg=""
+  data-color-text=""
+  data-color-card=""
+  data-color-border=""
+>
+
+<style>
+  .ap-root {
+    --c: #4f46e5;
+    --c-light: color-mix(in srgb, var(--c) 12%, white);
+    --c-dark: color-mix(in srgb, var(--c) 80%, black);
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --r: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    box-sizing: border-box;
+    color: var(--text);
+  }
+  .ap-root *, .ap-root *::before, .ap-root *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Card */
+  .ap-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    padding: 32px;
+    width: 100%;
+    max-width: 440px;
+  }
+
+  /* Header */
+  .ap-head { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .ap-logo {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--c); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ap-logo svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ap-title { font-size: 17px; font-weight: 800; }
+  .ap-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  /* Steps pill */
+  .ap-steps { display: flex; gap: 6px; margin-bottom: 22px; }
+  .ap-step-dot {
+    flex: 1; height: 4px; border-radius: 4px;
+    background: var(--border); transition: background .3s;
+  }
+  .ap-step-dot.done { background: var(--c); }
+
+  /* Section label */
+  .ap-section { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+
+  /* Form */
+  .ap-field { margin-bottom: 13px; }
+  .ap-label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+  .ap-input {
+    width: 100%; padding: 10px 13px;
+    border: 1.5px solid var(--border); border-radius: 9px;
+    font-size: 14px; color: var(--text); background: #fafafa;
+    outline: none; font-family: inherit; transition: border-color .2s, box-shadow .2s;
+  }
+  .ap-input:focus { border-color: var(--c); box-shadow: 0 0 0 3px var(--c-light); background: #fff; }
+  .ap-input::placeholder { color: #bbb; }
+
+  /* OTP row */
+  .ap-otp { display: flex; gap: 8px; justify-content: center; margin: 18px 0; }
+  .ap-otp input {
+    width: 46px; height: 54px; text-align: center;
+    font-size: 22px; font-weight: 800;
+    border: 2px solid var(--border); border-radius: 10px;
+    outline: none; background: #fafafa; color: var(--text);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .ap-otp input:focus { border-color: var(--c); box-shadow: 0 0 0 3px var(--c-light); background: #fff; }
+
+  /* Button */
+  .ap-btn {
+    width: 100%; padding: 12px; margin-top: 6px;
+    background: var(--c); color: #fff;
+    border: none; border-radius: 9px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .2s, transform .1s;
+  }
+  .ap-btn:hover:not(:disabled) { background: var(--c-dark); transform: translateY(-1px); }
+  .ap-btn:disabled { opacity: .55; cursor: not-allowed; }
+  .ap-btn-ghost {
+    background: transparent; color: var(--c);
+    border: 1.5px solid var(--c); margin-top: 10px;
+  }
+  .ap-btn-ghost:hover:not(:disabled) { background: var(--c-light); transform: none; }
+
+  /* Alerts */
+  .ap-alert {
+    padding: 10px 13px; border-radius: 9px;
+    font-size: 13px; margin-bottom: 14px; display: none;
+  }
+  .ap-alert.show { display: block; }
+  .ap-alert-err  { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+  .ap-alert-info { background: var(--c-light); color: var(--c-dark); border: 1px solid color-mix(in srgb, var(--c) 20%, transparent); }
+
+  /* Product preview chip */
+  .ap-chip {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--c-light); border: 1px solid color-mix(in srgb, var(--c) 18%, transparent);
+    border-radius: 10px; padding: 11px 14px; margin-bottom: 18px;
+  }
+  .ap-chip-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--c); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ap-chip-icon svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ap-chip-name { font-size: 14px; font-weight: 700; }
+  .ap-chip-sn { font-size: 11px; color: var(--muted); font-family: monospace; margin-top: 2px; }
+
+  /* License display */
+  .ap-license {
+    background: #f9fafb; border: 2px dashed var(--border);
+    border-radius: 10px; padding: 16px;
+    text-align: center; font-family: monospace;
+    font-size: 20px; font-weight: 900; letter-spacing: 3px;
+    color: var(--text); margin: 14px 0; word-break: break-all;
+  }
+
+  /* Success */
+  .ap-success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #f0fdf4; border: 2px solid #bbf7d0;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+  }
+  .ap-success-icon svg { width: 30px; height: 30px; stroke: #22c55e; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Detail rows */
+  .ap-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .ap-row:last-child { border-bottom: none; }
+  .ap-row-label { color: var(--muted); }
+  .ap-row-val { font-weight: 600; text-align: right; max-width: 58%; word-break: break-word; }
+
+  /* Spinner */
+  .ap-spin {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.4); border-top-color: #fff;
+    animation: spin .6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Footer */
+  .ap-footer { margin-top: 18px; font-size: 12px; color: var(--muted); text-align: center; }
+  .ap-footer a { color: var(--c); text-decoration: none; }
+
+  .ap-hidden { display: none !important; }
+
+  @media (max-width: 480px) {
+    .ap-card { padding: 22px 16px; }
+    .ap-otp input { width: 38px; height: 46px; font-size: 18px; }
+  }
+</style>
+
+<!-- STEP 1: Registration Details -->
+<div class="ap-card" id="ap-s1">
+  <div class="ap-head">
+    <div class="ap-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+    </div>
+    <div>
+      <div class="ap-title" id="ap-brand">Activation Portal</div>
+      <div class="ap-sub" id="ap-brand-sub">Product Registration</div>
+    </div>
+  </div>
+  <div class="ap-steps">
+    <div class="ap-step-dot done" id="d1"></div>
+    <div class="ap-step-dot" id="d2"></div>
+  </div>
+  <div class="ap-section">Enter product & owner details</div>
+  <div class="ap-alert ap-alert-err" id="e1"></div>
+  <div class="ap-field">
+    <label class="ap-label" for="ap-name">Full Name</label>
+    <input class="ap-input" id="ap-name" type="text" placeholder="Your full name" autocomplete="name" />
+  </div>
+  <div class="ap-field">
+    <label class="ap-label" for="ap-phone">Phone Number</label>
+    <input class="ap-input" id="ap-phone" type="tel" placeholder="+1 (555) 000-0000" autocomplete="tel" />
+  </div>
+  <div class="ap-field">
+    <label class="ap-label" for="ap-email">Email Address</label>
+    <input class="ap-input" id="ap-email" type="email" placeholder="you@example.com" autocomplete="email" />
+  </div>
+  <div class="ap-field">
+    <label class="ap-label" for="ap-serial">Serial Number</label>
+    <input class="ap-input" id="ap-serial" type="text" placeholder="e.g. SN-DEMO-001" autocapitalize="characters" spellcheck="false" />
+  </div>
+  <button class="ap-btn" id="ap-b1">
+    <span id="ap-b1-lbl">Send Verification Code</span><div class="ap-spin ap-hidden" id="ap-b1-sp"></div>
+  </button>
+</div>
+
+<!-- STEP 2: OTP Verify -->
+<div class="ap-card ap-hidden" id="ap-s2">
+  <div class="ap-head">
+    <div class="ap-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+    </div>
+    <div>
+      <div class="ap-title">Verify Code</div>
+      <div class="ap-sub">Enter the 6-digit code we sent you</div>
+    </div>
+  </div>
+  <div class="ap-steps">
+    <div class="ap-step-dot done"></div>
+    <div class="ap-step-dot done" id="d2b"></div>
+  </div>
+  <div class="ap-alert ap-alert-info" id="ap-sim"></div>
+  <div class="ap-alert ap-alert-err" id="e2"></div>
+  <div class="ap-otp">
+    <input id="o0" maxlength="1" type="text" inputmode="numeric" />
+    <input id="o1" maxlength="1" type="text" inputmode="numeric" />
+    <input id="o2" maxlength="1" type="text" inputmode="numeric" />
+    <input id="o3" maxlength="1" type="text" inputmode="numeric" />
+    <input id="o4" maxlength="1" type="text" inputmode="numeric" />
+    <input id="o5" maxlength="1" type="text" inputmode="numeric" />
+  </div>
+  <button class="ap-btn" id="ap-b2">
+    <span id="ap-b2-lbl">Activate Product</span><div class="ap-spin ap-hidden" id="ap-b2-sp"></div>
+  </button>
+  <button class="ap-btn ap-btn-ghost" id="ap-back">\u2190 Back</button>
+</div>
+
+<!-- STEP 3: Success -->
+<div class="ap-card ap-hidden" id="ap-s3" style="text-align:center">
+  <div class="ap-success-icon">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  </div>
+  <div class="ap-title" style="font-size:18px;margin-bottom:6px">Activated! \u{1F389}</div>
+  <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Your license key is ready. A certificate was sent to your email.</div>
+  <div class="ap-license" id="ap-lkey">\u2014</div>
+  <div id="ap-details"></div>
+  <button class="ap-btn" style="margin-top:20px" id="ap-reset">Activate Another</button>
+</div>
+
+<!-- Footer -->
+<div class="ap-footer">
+  Need help? <a href="mailto:support@yourdomain.com" id="ap-support-link">support@yourdomain.com</a>
+  <div style="margin-top: 8px;">
+    <a href="/admin" id="ap-admin-link" target="_blank" style="opacity: 0.6; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; color: var(--c); text-decoration: none;">
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      Admin Dashboard &rarr;
+    </a>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function() {
+  var root = document.getElementById('ap-root');
+  var API  = (root.dataset.api || '').replace(/\\/$/, '');
+  var state = {};
+
+  function applyBranding(b) {
+    if (!b) return;
+    var name = b.portalName || 'Activation Portal';
+    document.title = name;
+    var brandEl = document.getElementById('ap-brand');
+    if (brandEl) brandEl.textContent = name;
+
+    var sub = b.portalSub || 'Product Registration';
+    var subEl = document.getElementById('ap-brand-sub');
+    if (subEl) subEl.textContent = sub;
+
+    var email = b.supportEmail || 'support@yourdomain.com';
+    var supportLink = document.getElementById('ap-support-link');
+    if (supportLink) {
+      supportLink.href = 'mailto:' + email;
+      supportLink.textContent = email;
+    }
+
+    // Resolve accent color: custom hex takes priority over theme hue
+    var color;
+    if (b.colorPrimary && /^#[0-9a-fA-F]{6}$/.test(b.colorPrimary)) {
+      color = b.colorPrimary;
+    } else {
+      var themeHue = b.themeHue || 'indigo';
+      var hues = {
+        indigo: '#4f46e5',
+        emerald: '#059669',
+        violet: '#7c3aed',
+        orange: '#f97316',
+        sky: '#0ea5e9',
+        slate: '#18181b'
+      };
+      color = hues[themeHue] || '#4f46e5';
+    }
+    root.style.setProperty('--c', color);
+
+    // Apply custom background, text, card, border colors
+    if (b.colorBg && /^#[0-9a-fA-F]{6}$/.test(b.colorBg)) root.style.setProperty('--bg', b.colorBg);
+    if (b.colorText && /^#[0-9a-fA-F]{6}$/.test(b.colorText)) root.style.setProperty('--text', b.colorText);
+    if (b.colorCard && /^#[0-9a-fA-F]{6}$/.test(b.colorCard)) root.style.setProperty('--card', b.colorCard);
+    if (b.colorBorder && /^#[0-9a-fA-F]{6}$/.test(b.colorBorder)) root.style.setProperty('--border', b.colorBorder);
+
+    // Apply custom logo to all .ap-logo elements
+    if (b.portalLogoUrl) {
+      var logoEls = document.querySelectorAll('.ap-logo');
+      for (var i = 0; i < logoEls.length; i++) {
+        logoEls[i].innerHTML = '<img src="' + b.portalLogoUrl + '" style="width:100%;height:100%;object-fit:contain;border-radius:6px;" alt="Logo" onerror="this.style.display=\\'none\\'">';
+        logoEls[i].style.background = 'transparent';
+      }
+    }
+  }
+
+  applyBranding({
+    portalName: root.dataset.name,
+    portalSub: root.dataset.sub,
+    supportEmail: root.dataset.email,
+    themeHue: root.dataset.themeHue,
+    portalLogoUrl: root.dataset.logoUrl || '',
+    colorPrimary: root.dataset.colorPrimary || '',
+    colorBg: root.dataset.colorBg || '',
+    colorText: root.dataset.colorText || '',
+    colorCard: root.dataset.colorCard || '',
+    colorBorder: root.dataset.colorBorder || ''
+  });
+
+  if (API && typeof fetch === 'function') {
+    fetch(API + '/api/branding')
+      .then(function(r) { return r.json(); })
+      .then(function(b) { applyBranding(b); })
+      .catch(function(err) { console.warn('Failed to load branding:', err); });
+  }
+  
+  var adminLink = document.getElementById('ap-admin-link');
+  if (adminLink) {
+    var showAdmin = root.dataset.showAdmin !== 'false';
+    if (!showAdmin) {
+      adminLink.style.display = 'none';
+    } else if (API) {
+      var adminUrl = API;
+      if (!/^https?:\\/\\//i.test(adminUrl)) {
+        adminUrl = 'https://' + adminUrl;
+      }
+      adminLink.href = adminUrl + '/admin';
+    }
+  }
+
+  // OTP digit auto-advance
+  for (var i = 0; i < 6; i++) {
+    (function(n) {
+      var el = document.getElementById('o' + n);
+      el.addEventListener('input', function() {
+        this.value = this.value.replace(/\\D/g, '').slice(-1);
+        if (this.value && n < 5) document.getElementById('o' + (n + 1)).focus();
+      });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value && n > 0) document.getElementById('o' + (n - 1)).focus();
+      });
+    })(i);
+  }
+
+  // Enter key on inputs auto-triggers request/verify
+  document.getElementById('ap-serial').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') AP.request();
+  });
+
+  function show(n) {
+    [1,2,3].forEach(function(s) {
+      document.getElementById('ap-s' + s).classList.toggle('ap-hidden', s !== n);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function setLoading(n, on) {
+    var btn = document.getElementById('ap-b' + n);
+    var sp  = document.getElementById('ap-b' + n + '-sp');
+    var lb  = document.getElementById('ap-b' + n + '-lbl');
+    btn.disabled = on;
+    sp.classList.toggle('ap-hidden', !on);
+    lb.style.opacity = on ? '0' : '1';
+  }
+
+  function showErr(id, msg) {
+    var el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  function clearErr(id) {
+    var el = document.getElementById(id);
+    if (el) { el.textContent = ''; el.classList.remove('show'); }
+  }
+
+  function call(path, opts) {
+    var url = API + path;
+    var headers = { 'Content-Type': 'application/json' };
+    return fetch(url, Object.assign({ headers: headers }, opts))
+      .then(function(r) {
+        if (!r.ok) {
+          return r.json().then(function(errData) {
+            throw new Error(errData.message || 'Server error occurred.');
+          });
+        }
+        return r.json();
+      });
+  }
+
+  var AP = {
+    request: function() {
+      clearErr('e1');
+      var name   = document.getElementById('ap-name').value.trim();
+      var phone  = document.getElementById('ap-phone').value.trim();
+      var email  = document.getElementById('ap-email').value.trim();
+      var serial = document.getElementById('ap-serial').value.trim().toUpperCase();
+
+      if (!name)              { showErr('e1', 'Please enter your full name.'); return; }
+      if (!phone)             { showErr('e1', 'Please enter your phone number.'); return; }
+      if (!email || !email.includes('@')) { showErr('e1', 'Please enter a valid email address.'); return; }
+      if (!serial)            { showErr('e1', 'Please enter your serial number.'); return; }
+
+      state.name = name; state.phone = phone; state.email = email; state.serial = serial;
+      setLoading(1, true);
+      call('/api/otp/request', {
+        method: 'POST',
+        body: JSON.stringify({ serialNumber: serial, name: name, phone: phone, email: email })
+      }).then(function(d) {
+        setLoading(1, false);
+        if (!d.success) { showErr('e1', d.message || 'Failed to send code.'); return; }
+        var sim = document.getElementById('ap-sim');
+        if (sim) {
+          if (d.simulatedCode) {
+            sim.textContent = '\u{1F514} Test mode \u2014 your code is: ' + d.simulatedCode;
+            sim.classList.add('show');
+          } else {
+            sim.textContent = '';
+            sim.classList.remove('show');
+          }
+        }
+        show(2);
+        document.getElementById('o0').focus();
+      }).catch(function(err) { setLoading(1, false); showErr('e1', err.message); });
+    },
+
+    verify: function() {
+      clearErr('e2');
+      var code = '';
+      for (var i = 0; i < 6; i++) code += document.getElementById('o' + i).value;
+      if (code.length < 6) { showErr('e2', 'Please enter all 6 digits.'); return; }
+      setLoading(2, true);
+      call('/api/otp/verify', {
+        method: 'POST',
+        body: JSON.stringify({ serialNumber: state.serial, code: code })
+      }).then(function(d) {
+        setLoading(2, false);
+        if (!d.success) { showErr('e2', d.message || 'Verification failed. Try again.'); return; }
+        var p = d.data;
+        document.getElementById('ap-lkey').textContent = p.licenseKey || '\u2014';
+        document.getElementById('ap-details').innerHTML = [
+          ['Product',      p.productName],
+          ['Serial',       p.serialNumber],
+          ['Owner',        p.ownerName],
+          ['Email',        p.ownerEmail],
+          ['Activated',    new Date(p.activatedAt).toLocaleString()],
+        ].map(function(r) {
+          return '<div class="ap-row"><span class="ap-row-label">' + r[0] + '</span><span class="ap-row-val">' + (r[1] || '\u2014') + '</span></div>';
+        }).join('');
+        show(3);
+      }).catch(function(err) { setLoading(2, false); showErr('e2', err.message); });
+    },
+
+    go: function(n) { show(n); },
+
+    reset: function() {
+      document.getElementById('ap-serial').value = '';
+      ['ap-name','ap-phone','ap-email'].forEach(function(id) { document.getElementById(id).value = ''; });
+      for (var i = 0; i < 6; i++) document.getElementById('o' + i).value = '';
+      ['e1','e2','ap-sim'].forEach(clearErr);
+      state = {};
+      show(1);
+    }
+  };
+
+  window.AP = AP;
+
+  // Set up event listeners for buttons to avoid inline event handler race conditions/sandbox blocks
+  var btn1 = document.getElementById('ap-b1');
+  if (btn1) {
+    btn1.addEventListener('click', function(e) {
+      e.preventDefault();
+      AP.request();
+    });
+  }
+  
+  var btn2 = document.getElementById('ap-b2');
+  if (btn2) {
+    btn2.addEventListener('click', function(e) {
+      e.preventDefault();
+      AP.verify();
+    });
+  }
+  
+  var btnBack = document.getElementById('ap-back');
+  if (btnBack) {
+    btnBack.addEventListener('click', function(e) {
+      e.preventDefault();
+      AP.go(1);
+    });
+  }
+  
+  var btnReset = document.getElementById('ap-reset');
+  if (btnReset) {
+    btnReset.addEventListener('click', function(e) {
+      e.preventDefault();
+      AP.reset();
+    });
+  }
+})();
+<\/script>
+<!--/email_off-->
+</body>
+</html>`;

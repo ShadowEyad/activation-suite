@@ -1,0 +1,27 @@
+{
+  "name": "activation-suite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Self-hosted product registration and license management on Cloudflare Workers.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:no-otp": "wrangler dev --config wrangler.no-otp.jsonc",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test",
+    "deploy": "wrangler deploy",
+    "deploy:no-otp": "wrangler deploy --config wrangler.no-otp.jsonc"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.106.1"
+  },
+  "devDependencies": {
+    "wrangler": "4.168.0",
+    "esbuild": "0.27.0"
+  }
+}

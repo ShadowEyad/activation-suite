@@ -1,0 +1,58 @@
+<!--
+  WordPress / Elementor Custom HTML Block: Product Activation Portal
+  
+  HOW TO USE:
+  1. Add a "Custom HTML" block (Gutenberg) or "HTML Widget" (Elementor) on your page.
+  2. Paste this entire code block into the editor.
+  3. Modify the 'backendApiUrl' variable to point to your deployed Cloudflare Worker.
+  4. Save and Publish your page.
+-->
+
+<div id="wp-portal-wrapper" style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px 0; background: transparent;">
+  <!-- Isolated Portal Iframe -->
+  <iframe 
+    src="about:blank" 
+    id="wp-activation-iframe"
+    style="width: 100%; max-width: 460px; height: 750px; border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); background: #ffffff;"
+  ></iframe>
+</div>
+
+<script>
+  (function() {
+    // 1. UPDATE THIS URL to point to your live Cloudflare Worker API (no trailing slash)
+    var backendApiUrl = "https://your-worker-name.your-username.workers.dev";
+    
+    // 2. Configure branding variables
+    var brandName = "Activation Portal";
+    var supportEmail = "support@yourdomain.com";
+
+    var iframe = document.getElementById('wp-activation-iframe');
+    var doc = iframe.contentWindow || iframe.contentDocument;
+    if (doc.document) doc = doc.document;
+
+    // Load widget source directly from Cloudflare worker
+    fetch(backendApiUrl + '/portal')
+      .then(function(res) {
+        if (!res.ok) throw new Error('API server unreachable');
+        return res.text();
+      })
+      .then(function(html) {
+        // Set coordinates dynamically
+        var updatedHtml = html
+          .replace('data-api=""', 'data-api="' + backendApiUrl + '"')
+          .replace('data-name="Activation Portal"', 'data-name="' + brandName + '"')
+          .replace('data-email="support@yourdomain.com"', 'data-email="' + supportEmail + '"')
+          .replace(/href=["']\/admin["']/g, 'href="' + backendApiUrl + '/admin" target="_blank"');
+        
+        doc.open();
+        doc.write(updatedHtml);
+        doc.close();
+      })
+      .catch(function(err) {
+        console.error('Portal setup failed:', err);
+        doc.open();
+        doc.write('<div style="font-family:sans-serif; text-align:center; padding:40px; color:#f43f5e;"><h3>Activation Portal Offline</h3><p>Could not connect to the licensing server. Please contact support.</p></div>');
+        doc.close();
+      });
+  })();
+</script>

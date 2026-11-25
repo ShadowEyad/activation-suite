@@ -1,0 +1,61 @@
+{% comment %}
+  Shopify Custom Section: Product Activation Portal
+  
+  HOW TO USE:
+  1. Go to Shopify Admin -> Online Store -> Themes -> Edit Code.
+  2. Under the "Sections" directory, click "Add a new section".
+  3. Name it "activation-portal".
+  4. Paste this entire file contents into the new section file and save.
+  5. Go to the Shopify Theme Customizer, add the "Activation Portal" section to any page.
+{% endcomment %}
+
+<div id="ap-root" class="ap-root"
+  data-api="{{ section.settings.api_url }}"
+  data-name="{{ section.settings.brand_name | default: shop.name }}"
+  data-email="{{ section.settings.support_email | default: shop.email }}"
+  data-show-admin="{{ section.settings.show_admin_link }}"
+>
+  <!-- Load the widget content -->
+  {% render 'activation-widget-content-no-otp' %}
+</div>
+
+{% schema %}
+{
+  "name": "Activation Portal",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_url",
+      "label": "Cloudflare Worker API URL",
+      "default": "activation-tool-sell.patient-mud-d28d.workers.dev",
+      "info": "Do NOT include a trailing slash"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand Name Override",
+      "default": "",
+      "info": "Leave blank to use Shopify store name"
+    },
+    {
+      "type": "text",
+      "id": "support_email",
+      "label": "Support Email Override",
+      "default": "",
+      "info": "Leave blank to use Shopify customer email"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_admin_link",
+      "label": "Show Admin Dashboard Link",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Activation Portal",
+      "category": "Customer Service"
+    }
+  ]
+}
+{% endschema %}
